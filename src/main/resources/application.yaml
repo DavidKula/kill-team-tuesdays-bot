@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: kill-team-discord-bot
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+discord:
+  bot:
+    token: ${DISCORD_BOT_TOKEN}
+  channel:
+    id: ${DISCORD_CHANNEL_ID}
+  oauth:
+    url: ${DISCORD_OAUTH_URL}
+
+pairing:
+  strategy: least-played
+
+poll:
+  cron: "0 0 9 * * FRI"
+  question: "Who's available to play Kill Team this week?"
+  duration: PT1H

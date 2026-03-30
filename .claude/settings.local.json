@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:docs.jda.wiki)",
+      "WebFetch(domain:ci.dv8tion.net)",
+      "Bash(./mvnw clean:*)",
+      "Bash(mvn clean:*)",
+      "Bash(mvn test:*)",
+      "Bash(mvn compile:*)",
+      "Bash(/c/Users/kulad/moje/work/tech/apache-maven-3.9.9/bin/mvn test:*)"
+    ]
+  }
+}
