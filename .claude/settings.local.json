@@ -8,7 +8,8 @@
       "Bash(mvn clean:*)",
       "Bash(mvn test:*)",
       "Bash(mvn compile:*)",
-      "Bash(/c/Users/kulad/moje/work/tech/apache-maven-3.9.9/bin/mvn test:*)"
+      "Bash(/c/Users/kulad/moje/work/tech/apache-maven-3.9.9/bin/mvn test:*)",
+      "Bash(find /c/Users/kulad/moje/work/hobby/kill-team-discord-bot -path */db/migration/* -type f)"
     ]
   }
 }

@@ -31,11 +31,11 @@ public class PollService {
                 .expiresAt(now.plus(duration))
                 .build();
 
-        for (int i = 1; i < optionTexts.size() + 1; i++) { // in discord the poll options are starting at 1 (not 0)
+        for (int i = 0; i < optionTexts.size(); i++) {
             PollOption option = PollOption.builder()
                     .poll(poll)
                     .optionText(optionTexts.get(i))
-                    .optionIndex(i)
+                    .optionIndex(i + 1) // in discord the poll options are starting at 1 (not 0)
                     .build();
             poll.getOptions().add(option);
         }
@@ -56,11 +56,16 @@ public class PollService {
     @Transactional
     public void closePoll(String messageId) {
         log.info("PollService#closePoll({})", messageId);
-        pollRepository.findByDiscordMessageId(messageId).ifPresent(poll -> {
-            poll.setState(PollState.CLOSED);
-            pollRepository.save(poll);
-            eventPublisher.publishEvent(new PollClosedEvent(poll.getId()));
-        });
+        pollRepository.findByDiscordMessageId(messageId).ifPresentOrElse(poll -> {
+                    poll.setState(PollState.CLOSED);
+                    pollRepository.save(poll);
+                    eventPublisher.publishEvent(new PollClosedEvent(poll.getId()));
+                },
+                () -> {
+                    log.error("Unable to close poll {}, not present in db!)", messageId);
+                    throw new RuntimeException("Unable to close poll %s, it is not present in db.".formatted(messageId));
+                }
+        );
     }
 
     @Transactional
@@ -68,18 +73,18 @@ public class PollService {
         log.info("PollService#recordVote({}, {}, {})", messageId, answerId, userId);
         pollOptionRepository.findByPollDiscordMessageIdAndOptionIndex(messageId, (int) answerId)
                 .ifPresentOrElse(option -> {
-                    if (pollVoteRepository.findByPollOptionIdAndDiscordUserId(option.getId(), userId).isEmpty()) {
-                        PollVote vote = PollVote.builder()
-                                .pollOption(option)
-                                .discordUserId(userId)
-                                .votedAt(OffsetDateTime.now())
-                                .build();
-                        pollVoteRepository.save(vote);
-                        log.info("Recorded vote: user={} option={}", userId, option.getOptionText());
-                    } else {
-                        log.error("User already voted before and didn't remove its vote. {}, {}, {}",  messageId, answerId, userId);
-                    }
-                },
+                            if (pollVoteRepository.findByPollOptionIdAndDiscordUserId(option.getId(), userId).isEmpty()) {
+                                PollVote vote = PollVote.builder()
+                                        .pollOption(option)
+                                        .discordUserId(userId)
+                                        .votedAt(OffsetDateTime.now())
+                                        .build();
+                                pollVoteRepository.save(vote);
+                                log.info("Recorded vote: user={} option={}", userId, option.getOptionText());
+                            } else {
+                                log.error("User already voted before and didn't remove its vote. {}, {}, {}", messageId, answerId, userId);
+                            }
+                        },
                         () -> log.error("Poll option not found! {}, {}, {}", messageId, answerId, userId)
                 );
     }
@@ -89,9 +94,9 @@ public class PollService {
         log.info("PollService#removeVote({}, {}, {})", messageId, answerId, userId);
         pollOptionRepository.findByPollDiscordMessageIdAndOptionIndex(messageId, (int) answerId)
                 .ifPresentOrElse(option -> {
-                    pollVoteRepository.deleteByPollOptionIdAndDiscordUserId(option.getId(), userId);
-                    log.info("Removed vote: user={} option={}", userId, option.getOptionText());
-                },
+                            pollVoteRepository.deleteByPollOptionIdAndDiscordUserId(option.getId(), userId);
+                            log.info("Removed vote: user={} option={}", userId, option.getOptionText());
+                        },
                         () -> log.error("Poll option not found! {}, {}, {}", messageId, answerId, userId)
                 );
     }

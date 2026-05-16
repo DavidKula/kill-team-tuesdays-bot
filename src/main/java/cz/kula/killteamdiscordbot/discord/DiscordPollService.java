@@ -33,12 +33,16 @@ public class DiscordPollService {
 
         poll.getOptions().forEach(option -> pollBuilder.addAnswer(option.getOptionText()));
 
-        channel.sendMessagePoll(pollBuilder.build()).queue(
-                message -> {
-                    pollService.updateDiscordMessageId(poll.getId(), message.getId());
-                    log.info("Poll sent to Discord. messageId={}", message.getId());
-                },
-                error -> log.error("Failed to send poll to Discord", error)
-        );
+        channel.sendMessagePoll(pollBuilder.build())
+                .queue(
+                        message -> {
+                            pollService.updateDiscordMessageId(poll.getId(), message.getId());
+                            log.info("Poll sent to Discord. messageId={}", message.getId());
+                        },
+                        error -> {
+                            log.error("Failed to send poll to Discord", error);
+                            throw new RuntimeException("Failed to send poll to Discord", error);
+                        }
+                );
     }
 }
