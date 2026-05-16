@@ -30,6 +30,7 @@ public class WeeklyAttendancePollService {
     @Value("${poll.duration}")
     private Duration pollDuration;
 
+    @Transactional
     public void createWeeklyPoll() {
         log.info("WeeklyAttendancePollService#createWeeklyPoll()");
 
