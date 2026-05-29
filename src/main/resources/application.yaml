@@ -28,4 +28,4 @@ pairing:
 poll:
   cron: ${POLL_INTERVAL}
   question: "Are you coming to play Kill Team this week on tuesday at 17:30?"
-  duration: PT72H
+  duration: ${POLL_DURATION}
