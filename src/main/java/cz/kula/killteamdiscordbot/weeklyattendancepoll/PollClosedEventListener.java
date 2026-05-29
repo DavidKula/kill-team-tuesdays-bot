@@ -20,7 +20,7 @@ public class PollClosedEventListener {
     private final PairingService pairingService;
     private final ApplicationEventPublisher eventPublisher;
 
-//    @ApplicationModuleListener
+    @ApplicationModuleListener
     public void on(PollClosedEvent event) {
         log.info("PollClosedEventListener#on({})", event);
         var poll = pollService.getPoll(event.pollId());
