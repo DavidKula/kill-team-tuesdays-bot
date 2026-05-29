@@ -1,4 +1,4 @@
-package cz.kula.killteamdiscordbot.discord;
+package cz.kula.killteamdiscordbot.weeklyattendancepoll;
 
 import cz.kula.killteamdiscordbot.pairing.PairingResult;
 import cz.kula.killteamdiscordbot.pairing.PairingsCreatedEvent;

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -49,9 +50,11 @@ class PollServiceTest {
         assertThat(result.getQuestion()).isEqualTo("Available?");
         assertThat(result.getOptions()).hasSize(3);
         assertThat(result.getOptions().get(0).getOptionText()).isEqualTo("Monday");
-        assertThat(result.getOptions().get(0).getOptionIndex()).isZero();
+        assertThat(result.getOptions().get(0).getOptionIndex()).isEqualTo(1);
+        assertThat(result.getOptions().get(1).getOptionText()).isEqualTo("Tuesday");
+        assertThat(result.getOptions().get(1).getOptionIndex()).isEqualTo(2);
         assertThat(result.getOptions().get(2).getOptionText()).isEqualTo("Wednesday");
-        assertThat(result.getOptions().get(2).getOptionIndex()).isEqualTo(2);
+        assertThat(result.getOptions().get(2).getOptionIndex()).isEqualTo(3);
 
         verify(pollRepository).save(any(Poll.class));
     }
@@ -105,7 +108,10 @@ class PollServiceTest {
     void closePollDoesNotPublishEventWhenPollNotFound() {
         when(pollRepository.findByDiscordMessageId("msg-unknown")).thenReturn(Optional.empty());
 
-        pollService.closePoll("msg-unknown");
+        assertThrows(
+                RuntimeException.class,
+                () -> pollService.closePoll("msg-unknown")
+        );
 
         verify(eventPublisher, never()).publishEvent(any());
     }

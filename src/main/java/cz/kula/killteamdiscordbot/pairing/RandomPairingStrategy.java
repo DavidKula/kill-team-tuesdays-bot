@@ -24,4 +24,23 @@ public class RandomPairingStrategy implements PairingStrategy {
         }
         return results;
     }
+
+    @Override
+    public BipartiteMatchResult generateBipartitePairings(List<String> groupA, List<String> groupB) {
+        log.info("RandomPairingStrategy#generateBipartitePairings({}, {})", groupA, groupB);
+        var shuffledA = new ArrayList<>(groupA);
+        var shuffledB = new ArrayList<>(groupB);
+        Collections.shuffle(shuffledA);
+        Collections.shuffle(shuffledB);
+
+        var pairings = new ArrayList<PairingResult>();
+        int paired = Math.min(shuffledA.size(), shuffledB.size());
+        for (int i = 0; i < paired; i++) {
+            pairings.add(new PairingResult(shuffledA.get(i), shuffledB.get(i)));
+        }
+        var unmatched = new ArrayList<String>();
+        unmatched.addAll(shuffledA.subList(paired, shuffledA.size()));
+        unmatched.addAll(shuffledB.subList(paired, shuffledB.size()));
+        return new BipartiteMatchResult(pairings, unmatched);
+    }
 }

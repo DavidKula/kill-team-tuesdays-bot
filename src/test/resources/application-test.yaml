@@ -10,22 +10,20 @@ spring:
       lifecycle-management: start_only
       enabled: false
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:tc:postgresql:14.8-alpine3.18://test
 
 discord:
   bot:
-    token: ${DISCORD_BOT_TOKEN}
+    token: dummy
   channel:
-    id: ${DISCORD_CHANNEL_ID}
+    id: dummy
   oauth:
-    url: ${DISCORD_OAUTH_URL}
+    url: dummy
 
 pairing:
   strategy: least-played
 
 poll:
-  cron: ${POLL_INTERVAL}
+  cron: "0 * * * * *"
   question: "Are you coming to play Kill Team this week on tuesday at 17:30?"
-  duration: ${POLL_DURATION}
+  duration: 1m

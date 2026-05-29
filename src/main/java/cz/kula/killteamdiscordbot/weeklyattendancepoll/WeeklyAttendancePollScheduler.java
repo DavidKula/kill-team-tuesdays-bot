@@ -1,4 +1,4 @@
-package cz.kula.killteamdiscordbot.discord.weeklyattendancepoll;
+package cz.kula.killteamdiscordbot.weeklyattendancepoll;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

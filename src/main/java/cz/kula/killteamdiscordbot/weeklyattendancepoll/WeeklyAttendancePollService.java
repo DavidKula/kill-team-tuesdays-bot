@@ -1,4 +1,4 @@
-package cz.kula.killteamdiscordbot.discord.weeklyattendancepoll;
+package cz.kula.killteamdiscordbot.weeklyattendancepoll;
 
 import cz.kula.killteamdiscordbot.discord.DiscordPollService;
 import cz.kula.killteamdiscordbot.poll.Poll;
@@ -30,7 +30,6 @@ public class WeeklyAttendancePollService {
     @Value("${poll.duration}")
     private Duration pollDuration;
 
-    @Transactional
     public void createWeeklyPoll() {
         log.info("WeeklyAttendancePollService#createWeeklyPoll()");
 

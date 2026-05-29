@@ -5,6 +5,7 @@ import cz.kula.killteamdiscordbot.poll.PollService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.utils.messages.MessagePollBuilder;
 import net.dv8tion.jda.api.utils.messages.MessagePollData;
@@ -33,16 +34,33 @@ public class DiscordPollService {
 
         poll.getOptions().forEach(option -> pollBuilder.addAnswer(option.getOptionText()));
 
-        channel.sendMessagePoll(pollBuilder.build())
-                .queue(
-                        message -> {
-                            pollService.updateDiscordMessageId(poll.getId(), message.getId());
-                            log.info("Poll sent to Discord. messageId={}", message.getId());
-                        },
-                        error -> {
-                            log.error("Failed to send poll to Discord", error);
-                            throw new RuntimeException("Failed to send poll to Discord", error);
-                        }
-                );
+        Message message = channel.sendMessagePoll(pollBuilder.build())
+                .onErrorMap(error -> {
+                    log.error("Failed to send poll to Discord", error);
+                    throw new RuntimeException("Failed to send poll to Discord", error);
+                })
+                .complete();
+
+        onPollSendSuccess(channel, message.getId(), poll.getId());
+
+        channel.sendMessage("@everyone")
+                .onErrorMap(error -> {
+                    log.error("Failed to send poll to Discord", error);
+                    throw new RuntimeException("Failed to send poll message!", error);
+                })
+                .complete();
+    }
+
+    private void onPollSendSuccess(TextChannel channel, String messageId, Long pollId) {
+        try {
+            log.info("Poll sent to Discord. messageId={}", messageId);
+            pollService.updateDiscordMessageId(pollId, messageId);
+        } catch (Exception e) {
+            log.error("Unexpected exception during poll message Id update!", e);
+            log.warn("Deleting poll {}/{}", pollId, messageId);
+            channel.deleteMessageById(messageId).complete();
+            log.warn("Deleted poll {}/{}", pollId, messageId);
+            throw e;
+        }
     }
 }

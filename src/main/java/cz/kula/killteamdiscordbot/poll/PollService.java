@@ -46,11 +46,18 @@ public class PollService {
     @Transactional
     public void updateDiscordMessageId(Long pollId, String discordMessageId) {
         log.info("PollService#updateDiscordMessageId({}, {})", pollId, discordMessageId);
-        pollRepository.findById(pollId).ifPresent(poll -> {
-            poll.setDiscordMessageId(discordMessageId);
-            poll.setState(PollState.RUNNING);
-            pollRepository.save(poll);
-        });
+        pollRepository.findById(pollId).ifPresentOrElse(poll -> {
+                    poll.setDiscordMessageId(discordMessageId);
+                    poll.setState(PollState.RUNNING);
+                    pollRepository.save(poll);
+                    log.info("Poll {} successfully moved to RUNNING.", pollId);
+                },
+                () -> {
+                    log.error("Failed to find poll in db( pollId: {}, discordMessageId: {})!", pollId, discordMessageId);
+                    throw new RuntimeException("Failed to make the poll running! Poll not found!");
+                }
+        );
+
     }
 
     @Transactional
@@ -108,11 +115,11 @@ public class PollService {
     }
 
     @Transactional(readOnly = true)
-    public List<String> getYesVoterDiscordUserIds(Long pollId) {
-        log.info("PollService#getYesVoterDiscordUserIds({})", pollId);
+    public List<String> getVoterDiscordUserIdsByOptionIndex(Long pollId, int optionIndex) {
+        log.info("PollService#getVoterDiscordUserIdsByOptionIndex({}, {})", pollId, optionIndex);
         return pollRepository.findById(pollId)
                 .map(poll -> poll.getOptions().stream()
-                        .filter(option -> option.getOptionIndex() == 1)
+                        .filter(option -> option.getOptionIndex() == optionIndex)
                         .flatMap(option -> option.getVotes().stream())
                         .map(PollVote::getDiscordUserId)
                         .toList())
