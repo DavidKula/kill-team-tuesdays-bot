@@ -18,4 +18,10 @@ class PairingConfiguration {
     PairingStrategy leastPlayedPairingStrategy(PairingRepository pairingRepository) {
         return new LeastPlayedPairingStrategy(pairingRepository);
     }
+
+    @Bean
+    @ConditionalOnProperty(name = "pairing.strategy", havingValue = "blossom")
+    PairingStrategy blossomPairingStrategy(PairingRepository pairingRepository) {
+        return new BlossomPairingStrategy(pairingRepository);
+    }
 }
