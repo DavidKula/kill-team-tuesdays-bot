@@ -11,7 +11,21 @@
       "Bash(/c/Users/kulad/moje/work/tech/apache-maven-3.9.9/bin/mvn test:*)",
       "Bash(find /c/Users/kulad/moje/work/hobby/kill-team-discord-bot -path */db/migration/* -type f)",
       "Bash(\"C:\\\\Users\\\\kulad\\\\moje\\\\work\\\\tech\\\\apache-maven-3.9.9\\\\bin\\\\mvn.cmd\" -q -DskipTests compile)",
-      "Bash(\"C:\\\\Users\\\\kulad\\\\moje\\\\work\\\\tech\\\\apache-maven-3.9.9\\\\bin\\\\mvn.cmd\" test *)"
+      "Bash(\"C:\\\\Users\\\\kulad\\\\moje\\\\work\\\\tech\\\\apache-maven-3.9.9\\\\bin\\\\mvn.cmd\" test *)",
+      "Bash(mvn *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "PowerShell(mvn *)",
+      "Bash(cd /tmp)",
+      "Bash(jar -xf /c/Users/kulad/.m2/repository/org/jgrapht/jgrapht-core/1.5.3/jgrapht-core-1.5.3-sources.jar org/jgrapht/alg/matching/blossom/v5/KolmogorovWeightedPerfectMatching.java org/jgrapht/alg/matching/blossom/v5/ObjectiveSense.java org/jgrapht/graph/SimpleWeightedGraph.java)",
+      "Bash(ls -la org/jgrapht/alg/matching/blossom/v5/)",
+      "Read(//tmp/org/jgrapht/org/jgrapht/graph/**)",
+      "Bash(jar -tf /c/Users/kulad/.m2/repository/org/jgrapht/jgrapht-core/1.5.3/jgrapht-core-1.5.3-sources.jar)",
+      "Bash(jar -xf /c/Users/kulad/.m2/repository/org/jgrapht/jgrapht-core/1.5.3/jgrapht-core-1.5.3-sources.jar org/jgrapht/graph/AbstractBaseGraph.java)",
+      "Read(//tmp/org/jgrapht/graph/**)",
+      "Bash(xargs grep -n \"findByPlayerIds\")",
+      "Bash(git *)",
+      "PowerShell(docker info *)"
     ]
   }
 }

@@ -10,7 +10,7 @@
     </parent>
     <groupId>cz.kula</groupId>
     <artifactId>kill-team-discord-bot</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <name>kill-team-discord-bot</name>
     <description>kill-team-discord-bot</description>
 
@@ -19,6 +19,7 @@
         <spring-modulith.version>2.0.3</spring-modulith.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
 
+        <jgrapht-core.version>1.5.3</jgrapht-core.version>
     </properties>
     <dependencies>
         <dependency>
@@ -102,7 +103,12 @@
             <artifactId>testcontainers-postgresql</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
+        </dependency>
     </dependencies>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -111,6 +117,11 @@
                 <version>${spring-modulith.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jgrapht</groupId>
+                <artifactId>jgrapht-core</artifactId>
+                <version>${jgrapht-core.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

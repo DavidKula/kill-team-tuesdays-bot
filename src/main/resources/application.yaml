@@ -23,7 +23,7 @@ discord:
     url: ${DISCORD_OAUTH_URL}
 
 pairing:
-  strategy: least-played
+  strategy: blossom
 
 poll:
   cron: ${POLL_INTERVAL}
