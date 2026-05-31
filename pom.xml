@@ -10,7 +10,7 @@
     </parent>
     <groupId>cz.kula</groupId>
     <artifactId>kill-team-discord-bot</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <name>kill-team-discord-bot</name>
     <description>kill-team-discord-bot</description>
 
@@ -28,6 +28,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-flyway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>

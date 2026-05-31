@@ -1,6 +1,5 @@
-package cz.kula.killteamdiscordbot.discord;
+package cz.kula.killteamdiscordbot.poll;
 
-import cz.kula.killteamdiscordbot.poll.PollService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;

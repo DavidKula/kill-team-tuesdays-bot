@@ -1,0 +1,7 @@
+spring:
+  docker:
+    compose:
+      lifecycle-management: start_and_stop
+      enabled: true
+      stop:
+        command: down

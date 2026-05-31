@@ -1,4 +1,4 @@
-package cz.kula.killteamdiscordbot.discord;
+package cz.kula.killteamdiscordbot.weeklyattendancepoll;
 
 import cz.kula.killteamdiscordbot.pairing.PairingResult;
 import cz.kula.killteamdiscordbot.pairing.PairingsCreatedEvent;
@@ -49,7 +49,7 @@ public class PairingsMessageService {
                         .append("\n");
             } else {
                 sb.append("\n").append("<@").append(pairing.player1DiscordUserId()).append(">")
-                        .append(" has a bye this week.");
+                        .append(" has no explicit pairing. Feel free to look for your own :)");
             }
         }
         return sb.toString();

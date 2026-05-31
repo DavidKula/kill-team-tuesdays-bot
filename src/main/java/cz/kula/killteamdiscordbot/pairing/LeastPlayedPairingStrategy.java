@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,6 +35,44 @@ public class LeastPlayedPairingStrategy implements PairingStrategy {
         candidates.sort(Comparator.comparingInt(CandidatePair::count));
 
         return greedyMatch(candidates, discordUserIds);
+    }
+
+    @Override
+    public BipartiteMatchResult generateBipartitePairings(List<String> groupA, List<String> groupB) {
+        log.info("LeastPlayedPairingStrategy#generateBipartitePairings({}, {})", groupA, groupB);
+
+        if (groupA.isEmpty() || groupB.isEmpty()) {
+            var unmatched = Stream.concat(groupA.stream(), groupB.stream()).toList();
+            return new BipartiteMatchResult(List.of(), unmatched);
+        }
+
+        List<String> allPlayers = Stream.concat(groupA.stream(), groupB.stream()).toList();
+        Map<String, Map<String, Integer>> matchCounts = buildMatchCountMap(allPlayers);
+
+        var candidates = new ArrayList<CandidatePair>();
+        for (String a : groupA) {
+            for (String b : groupB) {
+                int count = matchCounts.getOrDefault(a, Map.of()).getOrDefault(b, 0);
+                candidates.add(new CandidatePair(a, b, count));
+            }
+        }
+        candidates.sort(Comparator.comparingInt(CandidatePair::count));
+
+        Set<String> paired = new HashSet<>();
+        var pairings = new ArrayList<PairingResult>();
+        for (CandidatePair candidate : candidates) {
+            if (paired.contains(candidate.player1()) || paired.contains(candidate.player2())) {
+                continue;
+            }
+            pairings.add(new PairingResult(candidate.player1(), candidate.player2()));
+            paired.add(candidate.player1());
+            paired.add(candidate.player2());
+        }
+
+        var unmatched = allPlayers.stream()
+                .filter(p -> !paired.contains(p))
+                .toList();
+        return new BipartiteMatchResult(pairings, unmatched);
     }
 
     private Map<String, Map<String, Integer>> buildMatchCountMap(List<String> playerIds) {

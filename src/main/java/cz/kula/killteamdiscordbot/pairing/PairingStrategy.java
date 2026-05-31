@@ -5,4 +5,6 @@ import java.util.List;
 public interface PairingStrategy {
 
     List<PairingResult> generatePairings(List<String> discordUserIds);
+
+    BipartiteMatchResult generateBipartitePairings(List<String> groupA, List<String> groupB);
 }

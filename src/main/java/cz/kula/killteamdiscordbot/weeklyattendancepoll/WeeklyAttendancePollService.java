@@ -1,8 +1,9 @@
-package cz.kula.killteamdiscordbot.discord.weeklyattendancepoll;
+package cz.kula.killteamdiscordbot.weeklyattendancepoll;
 
 import cz.kula.killteamdiscordbot.discord.DiscordPollService;
 import cz.kula.killteamdiscordbot.poll.Poll;
 import cz.kula.killteamdiscordbot.poll.PollService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
