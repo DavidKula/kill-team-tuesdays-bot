@@ -21,7 +21,7 @@ discord:
     url: dummy
 
 pairing:
-  strategy: least-played
+  strategy: blossom
 
 poll:
   cron: "0 * * * * *"
