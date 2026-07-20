@@ -1,0 +1,70 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: setup-java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: build
+        run: mvn clean package
+
+      - name: clean-old-jars-on-vm
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: rm -f ~/discord-bot/*.jar
+
+      - name: ship-jar
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          source: "target/kill-team-discord-bot-*.jar"
+          target: "/home/${{ secrets.VM_USER }}/discord-bot/"
+          strip_components: 1
+
+      - name: deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd ~/discord-bot || exit 1
+            sudo docker compose up -d --build
+
+      - name: verify
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd ~/discord-bot || exit 1
+            sudo docker compose ps --status running --services | grep -qx bot || {
+              echo "bot container is not running"; sudo docker compose ps; exit 1; }
+            for i in $(seq 1 30); do
+              if sudo docker compose logs bot | grep -q "Started KillTeamDiscordBotApplication"; then
+                echo "bot started successfully"; exit 0
+              fi
+              sleep 5
+            done
+            echo "bot did not start within timeout"
+            sudo docker compose logs bot --tail 50
+            exit 1
