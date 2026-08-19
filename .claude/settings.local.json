@@ -25,7 +25,14 @@
       "Read(//tmp/org/jgrapht/graph/**)",
       "Bash(xargs grep -n \"findByPlayerIds\")",
       "Bash(git *)",
-      "PowerShell(docker info *)"
+      "PowerShell(docker info *)",
+      "Bash(python -c \"import yaml; d=yaml.safe_load\\(open\\('.github/workflows/release.yaml'\\)\\); print\\([s.get\\('name'\\) for s in d['jobs']['release']['steps']]\\)\")",
+      "Bash(python -c \"import json; print\\('json ok'\\)\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const lines=fs.readFileSync\\('.github/workflows/release.yaml','utf8'\\).split\\('\\\\n'\\); const stepNames=lines.filter\\(l=>l.match\\(/^\\\\s+- name:/\\)\\).map\\(l=>l.replace\\(/^\\\\s+- name:\\\\s*/,''\\)\\); console.log\\(JSON.stringify\\(stepNames\\)\\);\")",
+      "Bash(grep \"\\\\.jar$\")",
+      "WebFetch(domain:docs.docker.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(python -c \"import re; t=open\\('.github/workflows/release.yaml'\\).read\\(\\); print\\('target ok:', '/home/\\\\${{ secrets.VM_USER }}/discord-bot/' in t\\); print\\('deploy cd ok:', t.count\\('cd ~/discord-bot || exit 1'\\)==2\\)\")"
     ]
   }
 }
