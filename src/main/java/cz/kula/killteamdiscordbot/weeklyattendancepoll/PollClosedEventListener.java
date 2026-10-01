@@ -2,7 +2,6 @@ package cz.kula.killteamdiscordbot.weeklyattendancepoll;
 
 import cz.kula.killteamdiscordbot.pairing.PairingResult;
 import cz.kula.killteamdiscordbot.pairing.PairingService;
-import cz.kula.killteamdiscordbot.pairing.PairingsCreatedEvent;
 import cz.kula.killteamdiscordbot.poll.PollClosedEvent;
 import cz.kula.killteamdiscordbot.poll.PollService;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +26,13 @@ public class PollClosedEventListener {
         var yesVoters = pollService.getVoterDiscordUserIdsByOptionIndex(event.pollId(), AttendanceOption.YES.getIndex());
         var learningVoters = pollService.getVoterDiscordUserIdsByOptionIndex(event.pollId(), AttendanceOption.YES_LEARNING.getIndex());
         var teachingVoters = pollService.getVoterDiscordUserIdsByOptionIndex(event.pollId(), AttendanceOption.YES_TEACHING.getIndex());
+        var arrangedVoters = pollService.getVoterDiscordUserIdsByOptionIndex(event.pollId(), AttendanceOption.YES_ARRANGED.getIndex());
         var pairings = pairingService.createPairings(event.pollId(), yesVoters, learningVoters, teachingVoters);
-        if (!pairings.isEmpty()) {
+        if (!pairings.isEmpty() || !arrangedVoters.isEmpty()) {
             var pairingResults = pairings.stream()
                     .map(p -> new PairingResult(p.getPlayer1DiscordUserId(), p.getPlayer2DiscordUserId()))
                     .toList();
-            eventPublisher.publishEvent(new PairingsCreatedEvent(event.pollId(), poll.getDiscordChannelId(), pairingResults));
+            eventPublisher.publishEvent(new PollProcessingFinishedEvent(event.pollId(), poll.getDiscordChannelId(), pairingResults, arrangedVoters));
         }
     }
 }
