@@ -14,6 +14,7 @@ public enum AttendanceOption {
     NO("No", 2),
     YES_LEARNING("Yes and I want a tutored game", 3),
     YES_TEACHING("Yes and I can teach", 4),
+    YES_ARRANGED("Yes, I already have a game arranged", 5),
     ;
 
     private final String label;
