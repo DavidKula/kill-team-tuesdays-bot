@@ -37,6 +37,9 @@ public class Pairing {
     @Column(name = "player2_discord_user_id")
     private @Nullable String player2DiscordUserId;
 
+    @Column(name = "tutor_discord_user_id")
+    private @Nullable String tutorDiscordUserId;
+
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 }

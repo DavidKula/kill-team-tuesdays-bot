@@ -63,8 +63,11 @@ public class PairingsMessageService {
                 sb.append(matchNumber++).append(". ")
                         .append("<@").append(pairing.player1DiscordUserId()).append(">")
                         .append(" vs ")
-                        .append("<@").append(pairing.player2DiscordUserId()).append(">")
-                        .append("\n");
+                        .append("<@").append(pairing.player2DiscordUserId()).append(">");
+                if (pairing.tutorDiscordUserId() != null) {
+                    sb.append(" (tutored by <@").append(pairing.tutorDiscordUserId()).append(">)");
+                }
+                sb.append("\n");
             } else {
                 sb.append("\n").append("<@").append(pairing.player1DiscordUserId()).append(">")
                         .append(" has no explicit pairing. Feel free to look for your own :)");
