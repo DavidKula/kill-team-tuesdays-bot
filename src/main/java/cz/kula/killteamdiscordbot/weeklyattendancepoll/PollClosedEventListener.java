@@ -30,7 +30,7 @@ public class PollClosedEventListener {
         var pairings = pairingService.createPairings(event.pollId(), yesVoters, learningVoters, teachingVoters);
         if (!pairings.isEmpty() || !arrangedVoters.isEmpty()) {
             var pairingResults = pairings.stream()
-                    .map(p -> new PairingResult(p.getPlayer1DiscordUserId(), p.getPlayer2DiscordUserId()))
+                    .map(p -> new PairingResult(p.getPlayer1DiscordUserId(), p.getPlayer2DiscordUserId(), p.getTutorDiscordUserId()))
                     .toList();
             eventPublisher.publishEvent(new PollProcessingFinishedEvent(event.pollId(), poll.getDiscordChannelId(), pairingResults, arrangedVoters));
         }

@@ -7,7 +7,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -125,5 +127,80 @@ class PairingServiceTest {
         ArgumentCaptor<List<String>> poolCaptor = ArgumentCaptor.forClass(List.class);
         verify(pairingStrategy).generatePairings(poolCaptor.capture());
         assertThat(poolCaptor.getValue()).containsExactlyInAnyOrder("Y1", "L2");
+    }
+
+    @Test
+    void oddCountWithTwoLearnersAndTutorFormsTrio() {
+        assertTrioReplacesBye(List.of(), List.of("L1", "L2"), List.of("T1"));
+    }
+
+    @Test
+    void trioLeavesExtraLearnerToBePairedWithYesVoter() {
+        assertTrioReplacesBye(List.of("Y1"), List.of("L1", "L2", "L3"), List.of("T1"));
+    }
+
+    @Test
+    void trioLeavesYesVotersToPlayEachOther() {
+        assertTrioReplacesBye(List.of("Y1", "Y2"), List.of("L1", "L2"), List.of("T1"));
+    }
+
+    @Test
+    void trioLeavesRemainingLearnerAndTutorPaired() {
+        assertTrioReplacesBye(List.of(), List.of("L1", "L2", "L3"), List.of("T1", "T2"));
+    }
+
+    @Test
+    void evenCountFormsNoTrio() {
+        var result = serviceWithRandomStrategy().createPairings(1L, List.of("Y1"), List.of("L1", "L2"), List.of("T1"));
+
+        assertThat(result).hasSize(2);
+        assertThat(result).allSatisfy(p -> assertThat(p.getTutorDiscordUserId()).isNull());
+    }
+
+    @Test
+    void oddCountWithSingleLearnerKeepsBye() {
+        var result = serviceWithRandomStrategy().createPairings(1L, List.of("Y1"), List.of("L1"), List.of("T1"));
+
+        assertThat(result).allSatisfy(p -> assertThat(p.getTutorDiscordUserId()).isNull());
+        assertThat(result).filteredOn(p -> p.getPlayer2DiscordUserId() == null).hasSize(1);
+        assertThat(result.getFirst().getPlayer1DiscordUserId()).isEqualTo("L1");
+        assertThat(result.getFirst().getPlayer2DiscordUserId()).isEqualTo("T1");
+    }
+
+    @Test
+    void oddCountWithoutTutorKeepsBye() {
+        var result = serviceWithRandomStrategy().createPairings(1L, List.of("Y1"), List.of("L1", "L2"), List.of());
+
+        assertThat(result).allSatisfy(p -> assertThat(p.getTutorDiscordUserId()).isNull());
+        assertThat(result).filteredOn(p -> p.getPlayer2DiscordUserId() == null).hasSize(1);
+    }
+
+    private PairingService serviceWithRandomStrategy() {
+        when(pairingRepository.saveAll(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        return new PairingService(pairingRepository, new RandomPairingStrategy());
+    }
+
+    private void assertTrioReplacesBye(List<String> yes, List<String> learning, List<String> teaching) {
+        var result = serviceWithRandomStrategy().createPairings(1L, yes, learning, teaching);
+
+        var trios = result.stream().filter(p -> p.getTutorDiscordUserId() != null).toList();
+        assertThat(trios).hasSize(1);
+        var trio = trios.getFirst();
+        assertThat(teaching).contains(trio.getTutorDiscordUserId());
+        assertThat(learning).contains(trio.getPlayer1DiscordUserId(), trio.getPlayer2DiscordUserId());
+        assertThat(trio.getPlayer1DiscordUserId()).isNotEqualTo(trio.getPlayer2DiscordUserId());
+
+        assertThat(result).allSatisfy(p -> assertThat(p.getPlayer2DiscordUserId()).isNotNull());
+
+        var everyone = new ArrayList<String>();
+        result.forEach(p -> {
+            everyone.add(p.getPlayer1DiscordUserId());
+            everyone.add(p.getPlayer2DiscordUserId());
+            if (p.getTutorDiscordUserId() != null) {
+                everyone.add(p.getTutorDiscordUserId());
+            }
+        });
+        assertThat(everyone).containsExactlyInAnyOrderElementsOf(
+                Stream.of(yes, learning, teaching).flatMap(List::stream).toList());
     }
 }

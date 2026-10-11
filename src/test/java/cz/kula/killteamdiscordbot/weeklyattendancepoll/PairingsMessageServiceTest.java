@@ -77,6 +77,19 @@ class PairingsMessageServiceTest {
         assertThat(sentMessage()).isEqualTo("**Already arranged their own games:** <@e>");
     }
 
+    @Test
+    void trioIsListedAsMatchWithTutor() {
+        pairingsMessageService.on(new PollProcessingFinishedEvent(POLL_ID, CHANNEL_ID, List.of(
+                new PairingResult("a", "b"),
+                new PairingResult("c", "d", "t")), List.of()));
+
+        assertThat(sentMessage()).isEqualTo("""
+                **This week's Kill Team pairings:**
+
+                1. <@a> vs <@b>
+                2. <@c> vs <@d> (tutored by <@t>)""");
+    }
+
     private String sentMessage() {
         var captor = ArgumentCaptor.forClass(CharSequence.class);
         verify(channel).sendMessage(captor.capture());

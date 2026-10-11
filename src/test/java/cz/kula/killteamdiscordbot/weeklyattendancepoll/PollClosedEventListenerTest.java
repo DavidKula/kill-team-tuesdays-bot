@@ -1,5 +1,7 @@
 package cz.kula.killteamdiscordbot.weeklyattendancepoll;
 
+import cz.kula.killteamdiscordbot.pairing.Pairing;
+import cz.kula.killteamdiscordbot.pairing.PairingResult;
 import cz.kula.killteamdiscordbot.pairing.PairingService;
 import cz.kula.killteamdiscordbot.poll.Poll;
 import cz.kula.killteamdiscordbot.poll.PollClosedEvent;
@@ -73,5 +75,17 @@ class PollClosedEventListenerTest {
         listener.on(new PollClosedEvent(POLL_ID));
 
         verify(eventPublisher, never()).publishEvent(any(Object.class));
+    }
+
+    @Test
+    void tutorIsPassedToPublishedPairing() {
+        when(pollService.getVoterDiscordUserIdsByOptionIndex(POLL_ID, 5)).thenReturn(List.of());
+        when(pairingService.createPairings(POLL_ID, List.of("yes-1"), List.of(), List.of())).thenReturn(List.of(
+                Pairing.builder().player1DiscordUserId("L1").player2DiscordUserId("L2").tutorDiscordUserId("T1").build()));
+
+        listener.on(new PollClosedEvent(POLL_ID));
+
+        verify(eventPublisher).publishEvent(new PollProcessingFinishedEvent(POLL_ID, CHANNEL_ID,
+                List.of(new PairingResult("L1", "L2", "T1")), List.of()));
     }
 }
