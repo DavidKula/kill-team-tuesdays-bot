@@ -58,6 +58,22 @@ class PairingsMessageServiceTest {
     }
 
     @Test
+    void playerWithoutPairingIsListedAfterAllMatchesEvenWhenNotLast() {
+        pairingsMessageService.on(new PollProcessingFinishedEvent(POLL_ID, CHANNEL_ID, List.of(
+                new PairingResult("a", "b"),
+                new PairingResult("c", null),
+                new PairingResult("d", "e")), List.of()));
+
+        assertThat(sentMessage()).isEqualTo("""
+                **This week's Kill Team pairings:**
+
+                1. <@a> vs <@b>
+                2. <@d> vs <@e>
+
+                <@c> has no explicit pairing. Feel free to look for your own :)""");
+    }
+
+    @Test
     void messageListsArrangedPlayersAfterPairings() {
         pairingsMessageService.on(new PollProcessingFinishedEvent(POLL_ID, CHANNEL_ID, List.of(
                 new PairingResult("a", "b")), List.of("e", "f")));

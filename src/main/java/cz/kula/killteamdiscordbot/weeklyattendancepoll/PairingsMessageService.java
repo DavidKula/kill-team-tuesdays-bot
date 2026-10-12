@@ -68,7 +68,11 @@ public class PairingsMessageService {
                     sb.append(" (tutored by <@").append(pairing.tutorDiscordUserId()).append(">)");
                 }
                 sb.append("\n");
-            } else {
+            }
+        }
+        // players without a pairing go after all matches, regardless of their position in the list
+        for (PairingResult pairing : pairings) {
+            if (pairing.player2DiscordUserId() == null) {
                 sb.append("\n").append("<@").append(pairing.player1DiscordUserId()).append(">")
                         .append(" has no explicit pairing. Feel free to look for your own :)");
             }
